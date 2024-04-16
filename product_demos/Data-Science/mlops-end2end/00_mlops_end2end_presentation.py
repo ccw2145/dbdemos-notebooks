@@ -53,7 +53,7 @@ dbutils.widgets.dropdown("reset_all_data", "true", ["true", "false"], "Reset all
 
 # COMMAND ----------
 
-# MAGIC %run ./_resources/00-setup $reset_all_data=$reset_all_data $catalog="dbdemos"
+# MAGIC %run ./_resources/00-setup $reset_all_data=$reset_all_data $catalog="cindy_demo_catalog"
 
 # COMMAND ----------
 

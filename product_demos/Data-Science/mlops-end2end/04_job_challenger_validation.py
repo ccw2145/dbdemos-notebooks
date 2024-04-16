@@ -37,7 +37,7 @@
 
 # COMMAND ----------
 
-# MAGIC %run ./_resources/00-setup $reset_all_data=false $catalog="dbdemos"
+# MAGIC %run ./_resources/00-setup $reset_all_data=false $catalog="cindy_demo_catalog"
 
 # COMMAND ----------
 
