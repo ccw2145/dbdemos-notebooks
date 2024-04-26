@@ -32,6 +32,17 @@ dbutils.widgets.dropdown("force_refresh_automl", "true", ["false", "true"], "Res
 
 # COMMAND ----------
 
+catalog = 'cindy_demo_catalog'
+dbName = schema = 'retail_mlops' 
+sql(f"USE {catalog}.{schema}")
+
+# COMMAND ----------
+
+bronze_table_name = f"{catalog}.{schema}.mlops_churn_bronze_customers"
+model_name = f"{catalog}.{schema}.mlops_churn"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ## Exploratory Data Anaylsis
 # MAGIC To get a feel of the data, what needs cleaning, pre-processing etc.
@@ -54,6 +65,16 @@ display(telcoDF)
 # MAGIC 2. Clean-up names and manual mapping
 # MAGIC
 # MAGIC _This can also work for streaming based features_
+
+# COMMAND ----------
+
+# Define Feature, Labels and Inference Table specs
+feature_table_name = "mlops_churn_features"
+primary_key = "customer_id"
+timestamp_col = "scoring_timestamp"
+label_col = "churn"
+labels_table_name = "mlops_churn_labels"
+inference_table_name = "mlops_churn_inference_log"
 
 # COMMAND ----------
 
@@ -137,7 +158,7 @@ def clean_churn_features(dataDF: SparkDataFrame) -> SparkDataFrame:
 
 # DBTITLE 1,Compute Churn Features and append a timestamp
 from datetime import datetime
-
+import pyspark.sql.functions as F
 # Add current scoring timestamp
 this_time = (datetime.now()).timestamp()
 
@@ -310,11 +331,11 @@ elif get_cloud_name() == "azure":
 # COMMAND ----------
 
 # DBTITLE 1,Publish from Offline to Online Store
-fe.publish_table(
-  name=feature_table_name,
-  online_store=churn_features_online_store_spec,
-  streaming = False
-)
+# fe.publish_table(
+#   name=feature_table_name,
+#   online_store=churn_features_online_store_spec,
+#   streaming = False
+# )
 
 # COMMAND ----------
 
@@ -351,37 +372,37 @@ fe.publish_table(
 
 # COMMAND ----------
 
-from databricks.sdk.service.catalog import OnlineTableSpec
+# from databricks.sdk.service.catalog import OnlineTableSpec
 
 
-# Create an online table specification
-churn_features_online_store_spec = OnlineTableSpec(
-  primary_key_columns = [primary_key],
-  timeseries_key = timestamp_col,
-  source_table_full_name = f"{catalog}.{dbName}.{feature_table_name}",
-  run_triggered={'triggered': 'true'}
-)
+# # Create an online table specification
+# churn_features_online_store_spec = OnlineTableSpec(
+#   primary_key_columns = [primary_key],
+#   timeseries_key = timestamp_col,
+#   source_table_full_name = f"{catalog}.{dbName}.{feature_table_name}",
+#   run_triggered={'triggered': 'true'}
+# )
 
 # COMMAND ----------
 
-# Create the online table
-w.online_tables.create(
-  name=f"{catalog}.{dbName}.{feature_table_name}_online_table",
-  spec=churn_features_online_store_spec
-)
+# # Create the online table
+# w.online_tables.create(
+#   name=f"{catalog}.{dbName}.{feature_table_name}_online_table",
+#   spec=churn_features_online_store_spec
+# )
 
 # COMMAND ----------
 
 # DBTITLE 1,Check status of Online Table
-from pprint import pprint
+# from pprint import pprint
 
 
-try:
-  online_table_spec = w.online_tables.get(f"{catalog}.{dbName}.{feature_table_name}_online_table")
-  pprint(online_table_exist)
+# try:
+#   online_table_spec = w.online_tables.get(f"{catalog}.{dbName}.{feature_table_name}_online_table")
+#   pprint(online_table_exist)
 
-except Exception as e:
-  pprint(e)
+# except Exception as e:
+#   pprint(e)
 
 # COMMAND ----------
 

@@ -25,7 +25,15 @@
 
 # COMMAND ----------
 
-# MAGIC %run ./_resources/00-setup $reset_all_data=false $catalog="cindy_demo_catalog"
+# MAGIC %run ./_resources/00-setup $reset_all_data=false $catalog="cindy_demo_catalog" $dbName="retail_mlops"
+
+# COMMAND ----------
+
+# Get current catalog
+catalog = "cindy_demo_catalog" 
+schema = dbName="retail_mlops"
+sql(f"USE {catalog}.{schema}")
+
 
 # COMMAND ----------
 
@@ -604,7 +612,7 @@ print(f"runs:/{ mlflow_run.info.run_id }/model")
 
 # COMMAND ----------
 
-mlflow_run.info.experiment_id
+mlflow_run.info.experiment_id 
 
 # COMMAND ----------
 

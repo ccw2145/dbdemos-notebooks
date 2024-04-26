@@ -53,7 +53,12 @@ dbutils.widgets.dropdown("reset_all_data", "true", ["true", "false"], "Reset all
 
 # COMMAND ----------
 
-# MAGIC %run ./_resources/00-setup $reset_all_data=$reset_all_data $catalog="cindy_demo_catalog"
+# %run ./_resources/00-setup $reset_all_data=$reset_all_data $catalog="cindy_demo_catalog"
+catalog = 'cindy_demo_catalog'
+schema = 'retail_mlops'
+bronze_table_name = f"{catalog}.{schema}.mlops_churn_bronze_customers"
+model_name = f"{catalog}.{schema}.mlops_churn"
+sql(f"USE {catalog}.{schema}")
 
 # COMMAND ----------
 
